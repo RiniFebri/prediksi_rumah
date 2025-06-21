@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediksi Harga Rumah</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Prediksi Harga Rumah</h2>
+        <div class="form-group">
+            <label>Luas Tanah (m²):</label>
+            <input type="number" id="luas" placeholder="Contoh: 120">
+        </div>
+        <div class="form-group">
+            <label>Jumlah Kamar:</label>
+            <input type="number" id="kamar" placeholder="Contoh: 3">
+        </div>
+        <div class="form-group">
+            <label>Lokasi:</label>
+            <select id="lokasi">
+                <option value="0">Pusat Kota</option>
+                <option value="1">Pinggiran</option>
+                <option value="2">Desa</option>
+            </select>
+        </div>
+        <button onclick="getPrediction()">Prediksi</button>
+        <p id="hasil"></p>
+    </div>
+
+    <script>
+        async function getPrediction() {
+            let data = {
+                luas: document.getElementById('luas').value,
+                kamar: document.getElementById('kamar').value,
+                lokasi: document.getElementById('lokasi').value
+            };
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            document.getElementById('hasil').innerText = "Harga Prediksi: " + result.prediction;
+        }
+    </script>
+</body>
+</html>
