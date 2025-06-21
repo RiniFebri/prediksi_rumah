@@ -37,12 +37,14 @@ print("Model harga rumah disimpan sebagai model.pkl")
 # In[ ]:
 
 
-# app.py
 from flask import Flask, request, jsonify, render_template
 import pickle
 import numpy as np
+import os
 
 app = Flask(__name__)
+
+# Load model dari file pickle
 model = pickle.load(open('model.pkl', 'rb'))
 
 @app.route('/')
@@ -53,15 +55,21 @@ def home():
 def predict():
     data = request.get_json()
     try:
+        # Ambil input dari user
         luas = float(data['luas'])
         kamar = int(data['kamar'])
         lokasi = int(data['lokasi'])  # 0 = pusat kota, 1 = pinggiran, 2 = desa
+
+        # Buat array fitur untuk prediksi
         fitur = np.array([[luas, kamar, lokasi]])
         prediksi = model.predict(fitur)[0]
+
         return jsonify({'prediction': f'{prediksi:.2f} juta'})
     except:
         return jsonify({'prediction': 'Input tidak valid'})
 
+# Bagian penting untuk Render: host & port
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
 
